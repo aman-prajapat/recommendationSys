@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Product Recommendation</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>AI Product Recommendation</h2>
+
+        <input id="query" type="text" placeholder="e.g., phone under 500">
+        <button onclick="sendQuery()">Search</button>
+
+        <!-- SQL Query Section -->
+        <h3>Generated SQL Query</h3>
+        <pre id="sql_output"></pre>
+
+        <!-- Product List Section -->
+        <h3>Recommended Products</h3>
+        <ul id="product_list"></ul>
+    </div>
+
+    <script>
+        async function sendQuery() {
+            const q = document.getElementById("query").value;
+
+            const response = await fetch("/recommend", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: q })
+            });
+
+            const data = await response.json();
+
+            // Show SQL Query
+            document.getElementById("sql_output").textContent = data.sql_query;
+
+            // Show Product List
+            const listEl = document.getElementById("product_list");
+            listEl.innerHTML = ""; // Clear old list
+
+            if (data.results.length === 0) {
+                listEl.innerHTML = "<li>No products found.</li>";
+                return;
+            }
+
+            data.results.forEach(p => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+            <strong>${p.name}</strong><br>
+            Category: ${p.category}<br>
+            Price: $${p.price}<br>
+            Brand: ${p.brand}
+        `;
+                li.classList.add("product-item");
+                listEl.appendChild(li);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
