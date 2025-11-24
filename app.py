@@ -27,6 +27,6 @@ def recommend():
     sql_query = translate_to_sql(user_query)
     results = run_sql(sql_query)
     return jsonify({"sql_query": sql_query, "results": results})
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use the dynamic PORT variable
+    app.run(host='0.0.0.0', port=port)
